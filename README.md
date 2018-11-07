@@ -12,3 +12,10 @@ Better sonarqube rules profile for daily development.
 * down unused ** check.
 * down TODO check
 * close RuntimeException check.
+
+
+## Coding Style Guide
+
+    cd src/book
+    gitbook install
+    gitbook serve
