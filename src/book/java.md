@@ -1,5 +1,4 @@
 # JAVA 
-<!-- toc -->
 
 ## 1 概述
 
@@ -137,11 +136,11 @@ Each top-level class resides in a source file of its own.
 
 #### 3.4.2 成员顺序
 
-成员的顺序没有严格的限制，我们也不认可按照 fields,method 这种简单的方法排序是好的。
+class 成员的顺序按照逻辑顺序来排，以方便阅读和理解。 
 
-The order you choose for the members and initializers of your class can have a great effect on learnability. However, there's no single correct recipe for how to do it; different classes may order their contents in different ways.
+没有唯一正确的方法来排序内容; 不同的类可以以不同的方式排序其内容。最重要的是有逻辑顺序，如果被问到，维护者可以解释清楚。
 
-What is important is that each class uses some logical order, which its maintainer could explain if asked. For example, new methods are not just habitually added to the end of the class, as that would yield "chronological by date added" ordering, which is not a logical ordering.
+
 
 ##### 3.4.2.1 Overloads: never split
 
@@ -155,18 +154,25 @@ Terminology Note: block-like construct refers to the body of a class, method or 
 
 ### 4.1 大括号
 
-#### 4.1.1 Braces are used where optional
+#### 4.1.1 大括号在需要的地方使用
 
-Braces are used with if, else, for, do and while statements, even when the body is empty or contains only a single statement.
+大括号与if，else，for，do和while语句一起使用，即使里面为空或仅包含单个语句。
 
-#### 4.1.2 Nonempty blocks: K & R style
-Braces follow the Kernighan and Ritchie style ("Egyptian brackets") for nonempty blocks and block-like constructs:
+    if(condition1)doJob();//不要这样。
+    if(condition2){
+      doJob();//这样，为了预防增补代码时忘记
+    }
 
-No line break before the opening brace.
-Line break after the opening brace.
-Line break before the closing brace.
-Line break after the closing brace, only if that brace terminates a statement or terminates the body of a method, constructor, or named class. For example, there is no line break after the brace if it is followed by else or a comma.
-Examples:
+#### 4.1.2 非空语句块采用K&R风格
+
+对于非空语句块，花括号遵循K&R风格：
+ 
+- 左括号前不换行。
+- 左括号后换行。
+- 右括号前换行。
+- 如果右括号结束一个语句块或者函数体、构造函数体或者有命名的类体，则需要换行。例如，当右括号后面接else或者逗号时，不换行。
+
+例子：
 
     return () -> {
       while (condition()) {
@@ -189,13 +195,14 @@ Examples:
         }
       }
     };
+    
 A few exceptions for enum classes are given in Section 4.8.1, Enum classes.
 
-#### 4.1.3 Empty blocks: may be concise
+#### 4.1.3 空语句块：使代码更简洁
 
-An empty block or block-like construct may be in K & R style (as described in Section 4.1.2). Alternatively, it may be closed immediately after it is opened, with no characters or line break in between ({}), unless it is part of a multi-block statement (one that directly contains multiple blocks: if/else or try/catch/finally).
+空块或块状结构可以采用K＆R样式（如第4.1.2节所述）。 或者不换行写在一起“{}”
 
-Examples:
+例子：
 
       // This is acceptable
       void doNothing() {}
@@ -208,53 +215,57 @@ Examples:
         doSomething();
       } catch (Exception e) {}
       
-### 4.2 Block indentation: +2 spaces
+### 4.2 语句块的缩进：2空格
 
-Each time a new block or block-like construct is opened, the indent increases by two spaces. When the block ends, the indent returns to the previous indent level. The indent level applies to both code and comments throughout the block. (See the example in Section 4.1.2, Nonempty blocks: K & R Style.)
+每当一个新的语句块产生，缩进就增加两个空格。当这个语句块结束时，缩进恢复到上一层级的缩进格数。缩进要求对整个语句块中的代码和注释都适用。（例子可参考之前4.1.2节中的例子）。
 
 ### 4.3 每行一个表达式
 
-Each statement is followed by a line break.
+每个语句后面都有一个换行符。
 
-限制每行的语句数量，可以帮助准确定位异常。
+提示：限制每行的语句数量，可以帮助准确定位异常。即使做不好每行一个语句，也要能保证这一行出NullPointException时定位到那个表达式。
 
 ### 4.4 每行字符数限制：100
 
-常规语句不要超过这个限制，可以提前换行。超长的语句会影响阅读，还的移动滚动条。
+常规语句不要超过这个限制，可以提前换行。超长的语句会影响阅读，必须横向移动滚动条。
 
 提示：当分屏对照、diff模式时，就能体现出优势来了。
 
 例外：
 
-* Lines where obeying the column limit is not possible (for example, a long URL in Javadoc, or a long JSNI method reference).
-* package and import statements (see Sections 3.2 Package statement and 3.3 Import statements).
-* Command lines in a comment that may be cut-and-pasted into a shell.
+* 按照行长度限制，无法实现地方（例如：javadoc中超长的URL地址， 或者一个超长的JSNI方法的引用）；
+* package和import语句不受长度限制。（见3.2、3.3节）；
+* 注释中的命令行指令行，将被直接复制到shell中执行的。
 
-### 4.5 Line-wrapping
+### 4.5 断行
 
-Terminology Note: When code that might otherwise legally occupy a single line is divided into multiple lines, this activity is called line-wrapping.
+术语注意：当原本占用一行的代码分为多行时，称为断行。
 
-There is no comprehensive, deterministic formula showing exactly how to line-wrap in every situation. Very often there are several valid ways to line-wrap the same piece of code.
+没有确定性的公式来指导在每种情况下进行换行。 通常有几种有效的方法来断行。
 
-Note: While the typical reason for line-wrapping is to avoid overflowing the column limit, even code that would in fact fit within the column limit may be line-wrapped at the author's discretion.
+注意：虽然换行的典型原因是为了避免超过列数限制，但即使是实际符合列限制的代码也可能由作者自行决定是否换行。
 
-Tip: Extracting a method or local variable may solve the problem without the need to line-wrap.
+提示：提取方法或局部变量可以解决问题，而无需断行。
 
-#### 4.5.1 Where to break
+#### 4.5.1 在何处断行
 
-The prime directive of line-wrapping is: prefer to break at a higher syntactic level. Also:
 
-When a line is broken at a non-assignment operator the break comes before the symbol. (Note that this is not the same practice used in Google style for other languages, such as C++ and JavaScript.)
-This also applies to the following "operator-like" symbols:
-the dot separator (.)
-the two colons of a method reference (::)
-an ampersand in a type bound (<T extends Foo & Bar>)
-a pipe in a catch block (catch (FooException | BarException e)).
-When a line is broken at an assignment operator the break typically comes after the symbol, but either way is acceptable.
-This also applies to the "assignment-operator-like" colon in an enhanced for ("foreach") statement.
-A method or constructor name stays attached to the open parenthesis (() that follows it.
-A comma (,) stays attached to the token that precedes it.
-A line is never broken adjacent to the arrow in a lambda, except that a break may come immediately after the arrow if the body of the lambda consists of a single unbraced expression. Examples:
+当在非赋值运算符处断行时，换行要出现在符号之前。 （请注意，这与其他语言（例如C ++和JavaScript）在Google风格中使用的做法不同。）
+这也适用于以下“类似运算符”的符号：
+
+- 点分隔符（.）
+- 方法引用的两个冒号（::)
+- 类型绑定中的&符号（<T extends Foo & Bar>）
+- catch块中的管道（catch（FooException | BarException e））
+
+当在赋值运算符处断行时，断点通常出现在符号之后，但任何一种方式都是可接受的。
+这也适用于增强型for（“foreach”）语句中的“赋值操作符”冒号。
+
+- 方法或构造函数名称保持附加到其后面的左括号（（））。
+- 逗号（，）保持附加到其前面的标记。
+- 在lambda中箭头旁边的线条永远不会被破坏，除非如果lambda的主体由单个无支撑表达式组成，则箭头后面可能会出现断点。
+
+例子：
 
     MyLambda<String, Long, Object> lambda =
         (String label, Long value, Object obj) -> {
@@ -263,18 +274,28 @@ A line is never broken adjacent to the arrow in a lambda, except that a break ma
 
     Predicate<String> predicate = str ->
         longExpressionInvolving(str);
-Note: The primary goal for line wrapping is to have clear code, not necessarily code that fits in the smallest number of lines.
+        
+提示：断行是为了保持代码清晰。
 
-#### 4.5.2 Indent continuation lines at least +4 spaces
-When line-wrapping, each line after the first (each continuation line) is indented at least +4 from the original line.
+#### 4.5.2 断行的缩进：至少4个字符
 
-When there are multiple continuation lines, indentation may be varied beyond +4 as desired. In general, two continuation lines use the same indentation level if and only if they begin with syntactically parallel elements.
+当断行之后，在第一行之后的行，我们叫做延续行。每一个延续行在第一行的基础上至少缩进四个字符。
+当原行之后有多个延续行的情况，缩进可以大于4个字符。如果多个延续行之间由同样的语法元素断行，它们可以采用相同的缩进。
+ 
+4.6.3节介绍水平对齐中，解决了使用多个空格与之前行缩进对齐的问题。
 
-Section 4.6.3 on Horizontal alignment addresses the discouraged practice of using a variable number of spaces to align certain tokens with previous lines.
+例子：
 
-### 4.6 Whitespace
+    public static final String NL = "\n";
+    StringBuilder sb = new StringBuilder()
+            .append("Hello").append(NL)
+            .append("World")
+            ;
+
+### 4.6 空白
 
 #### 4.6.1 Vertical Whitespace
+
 A single blank line always appears:
 
 Between consecutive members or initializers of a class: fields, constructors, methods, nested classes, static initializers, and instance initializers.
@@ -285,16 +306,26 @@ A single blank line may also appear anywhere it improves readability, for exampl
 
 Multiple consecutive blank lines are permitted, but never required (or encouraged).
 
-#### 4.6.2 Horizontal whitespace
+以下情况需要使用一个空行：
+
+* 成员之间：fields, constructors, methods, nested classes, static initializers, and instance initializers.
+* 例外：两个连续字段之间的空行是可选的，用于字段的空行主要用来对字段进行逻辑分组。
+* 在method内，语句的逻辑分组间使用空行。
+* class内的第一个成员前或最后一个成员后的空行是可选的(既不鼓励也不反对这样做，视个人喜好而定)。
+* 要满足本文档中其他节的空行要求(比如3.3节：import语句)
+
+多空几行没有问题，但也没有必要这样做。
+
+#### 4.6.2 水平空白
 
 Beyond where required by the language or other style rules, and apart from literals, comments and Javadoc, a single ASCII space also appears in the following places only.
 
-1. Separating any reserved word, such as if, for or catch, from an open parenthesis (() that follows it on that line
-2. Separating any reserved word, such as else or catch, from a closing curly brace (}) that precedes it on that line
-3. Before any open curly brace ({), with two exceptions:
+1. 关键字和后续左括号，if, for, catch
+2. 关键字和其前面的右大括号，如 else, catch
+3. 在任何左大括号前({)，两个例外：
     * `@SomeAnnotation({a, b}) (no space is used)`
     * `String[][] x = {{"foo"}}; `
-4. On both sides of any binary or ternary operator. This also applies to the following "operator-like" symbols:
+4. 在任何二元或三元运算符的两侧。这也适用于以下“类运算符”符号：
     * the ampersand in a conjunctive type bound: <T extends Foo & Bar>
     * the pipe for a catch block that handles multiple exceptions: catch (FooException | BarException e)  
     * the colon (:) in an enhanced for ("foreach") statement
@@ -302,8 +333,8 @@ Beyond where required by the language or other style rules, and apart from liter
     * but not
     * the two colons (::) of a method reference, which is written like Object::toString
     * the dot separator (.), which is written like object.toString()
-5. After ,:; or the closing parenthesis ()) of a cast
-6. On both sides of the double slash (//) that begins an end-of-line comment. Here, multiple spaces are allowed, but not required.
+5. 在`,:;`之后或表示cast的右括号之后
+6. 如果在一条语句后做注释，则双斜杠(//)两边都要空格。这里可以允许多个空格，但没有必要。
 7. Between the type and variable of a declaration: List<String> list
 8. Optional just inside both braces of an array initializer
     * new int[] {5, 6} and new int[] { 5, 6 } are both valid
@@ -311,15 +342,13 @@ Beyond where required by the language or other style rules, and apart from liter
 
 This rule is never interpreted as requiring or forbidding additional space at the start or end of a line; it addresses only interior space.
 
-4.6.3 垂直方向对齐：不要求
+4.6.3 垂直对齐：不要求
 
-不需要做到垂直对齐，垂直对齐在个别场合会起到帮助阅读的作用，为了垂直对齐需要付出额外的人工成本。
+术语说明：垂直对齐指的是通过增加可变数量的空格来使某一行的字符与上一行的相应字符对齐。
 
-Terminology Note: Horizontal alignment is the practice of adding a variable number of additional spaces in your code with the goal of making certain tokens appear directly below certain other tokens on previous lines.
+这是允许的(而且在不少地方可以看到这样的代码)，但Google编程风格对此不做要求。即使对于已经使用水平对齐的代码，我们也不需要去保持这种风格。
 
-This practice is permitted, but is never required by Google Style. It is not even required to maintain horizontal alignment in places where it was already used.
-
-Here is an example without alignment, then using alignment:
+看这个对照例子：
 
     private int x; // this is fine
     private Color color; // this too
@@ -327,7 +356,7 @@ Here is an example without alignment, then using alignment:
     private int   x;      // permitted, but future edits
     private Color color;  // may leave it unaligned
 
-Tip: Alignment can aid readability, but it creates problems for future maintenance. Consider a future change that needs to touch just one line. This change may leave the formerly-pleasing formatting mangled, and that is allowed. More often it prompts the coder (perhaps you) to adjust whitespace on nearby lines as well, possibly triggering a cascading series of reformattings. That one-line change now has a "blast radius." This can at worst result in pointless busywork, but at best it still corrupts version history information, slows down reviewers and exacerbates merge conflicts.
+Tip：对齐可增加代码可读性，但它为日后的维护带来问题。考虑未来某个时候，我们需要修改一堆对齐的代码中的一行。 这可能导致原本很漂亮的对齐代码变得错位。很可能它会提示你调整周围代码的空白来使这一堆代码重新水平对齐(比如程序员想保持这种水平对齐的风格)， 这就会让你做许多的无用功，增加了reviewer的工作并且可能导致更多的合并冲突。
 
 ### 4.7 小括号分组：推荐
 
@@ -335,13 +364,14 @@ Tip: Alignment can aid readability, but it creates problems for future maintenan
 
 特别是逻辑运算符的左边和右边
 
-Optional grouping parentheses are omitted only when author and reviewer agree that there is no reasonable chance the code will be misinterpreted without them, nor would they have made the code easier to read. It is not reasonable to assume that every reader has the entire Java operator precedence table memorized.
+除非作者和reviewer都认为去掉小括号也不会使代码被误解，或是去掉小括号能让代码更易于阅读，否则我们不应该去掉小括号。 我们没有理由假设读者能记住整个Java运算符优先级表。
 
 ### 4.8 Specific constructs
 
 #### 4.8.1 Enum classes
 
-After each comma that follows an enum constant, a line break is optional. Additional blank lines (usually just one) are also allowed. This is one possibility:
+枚举常量间用逗号隔开，换行可选。
+看这个例子：
 
     private enum Answer {
       YES {
@@ -354,29 +384,45 @@ After each comma that follows an enum constant, a line break is optional. Additi
       MAYBE
     }
 
-An enum class with no methods and no documentation on its constants may optionally be formatted as if it were an array initializer (see Section 4.8.3.1 on array initializers).
+    public enum AccountType {
+      /**用户故事卡*/
+      Story,
+      /**特性卡*/
+      Feature
+    }
 
-private enum Suit { CLUBS, HEARTS, SPADES, DIAMONDS }
-Since enum classes are classes, all other rules for formatting classes apply.
 
-#### 4.8.2 Variable declarations
+没有方法和文档的枚举类可写成数组初始化的格式：
 
-##### 4.8.2.1 One variable per declaration
-Every variable declaration (field or local) declares only one variable: declarations such as int a, b; are not used.
+    private enum Suit { CLUBS, HEARTS, SPADES, DIAMONDS }
 
-Exception: Multiple variable declarations are acceptable in the header of a for loop.
+由于枚举类也是一个类，因此所有适用于其它类的格式规则也适用于枚举类。
 
-##### 4.8.2.2 Declared when needed
+#### 4.8.2 变量声明
+
+##### 4.8.2.1 每次只声明一个变量
+
+不要使用组合声明，比如int a, b;。
+
+例外：for循环的head里面可以声明多个变量
+
+例外：成组出现的变量，同时使用同时回收
+
+##### 4.8.2.2 需要时声明
 
 需要的时候声明，就近声明，就近使用。
 
-Local variables are not habitually declared at the start of their containing block or block-like construct. Instead, local variables are declared close to the point they are first used (within reason), to minimize their scope. Local variable declarations typically have initializers, or are initialized immediately after declaration.
+有些书习惯性的教人们在语句块一开始的时候声明，
 
-#### 4.8.3 Arrays
+好的做法是在第一次使用的地方最近的地方声明，以减小它们的使用范围。
+局部变量应该在声明的时候就进行初始化。如果不能在声明时初始化，也应该尽快完成初始化。
 
-##### 4.8.3.1 Array initializers: can be "block-like"
 
-Any array initializer may optionally be formatted as if it were a "block-like construct." For example, the following are all valid (not an exhaustive list):
+#### 4.8.3 数组
+
+##### 4.8.3.1 数组初始化：可以类似块代码处理
+
+所有数组的初始化，都可以采用和块代码相同的格式处理。例如以下格式都是允许的：
 
     new int[] {           new int[] {
       0, 1, 2, 3            0,
@@ -387,22 +433,22 @@ Any array initializer may optionally be formatted as if it were a "block-like co
       2, 3
     }                     new int[]
                               {0, 1, 2, 3}
-##### 4.8.3.2 No C-style array declarations
+##### 4.8.3.2 不能像C风格一样声明数组
 
-使用：`String[] args`, 不用:`String args[]`
+方括号应该是变量类型的一部分，使用：`String[] args`, 不用:`String args[]`
 
+#### 4.8.4 switch语句
 
-#### 4.8.4 Switch statements
+术语说明：switch语句是指在switch花括号中，包含了一组或多组语句块。每组语句块都由一个或多个switch标签（例如case FOO：或者 default：）打头。
 
-Terminology Note: Inside the braces of a switch block are one or more statement groups. Each statement group consists of one or more switch labels (either case FOO: or default:), followed by one or more statements (or, for the last statement group, zero or more statements).
+##### 4.8.4.1 缩进
 
-##### 4.8.4.1 Indentation
-As with any other block, the contents of a switch block are indented +2.
-
-After a switch label, there is a line break, and the indentation level is increased +2, exactly as if a block were being opened. The following switch label returns to the previous indentation level, as if a block had been closed.
+和其他语句块一样，switch花括号之后缩进两个字符。
+每个switch标签之后，后面紧接的非标签的新行，按照花括号相同的处理方式缩进两个字符。在标签结束后，恢复到之前的缩进，类似花括号结束。
 
 ##### 4.8.4.2 Fall-through: commented
-Within a switch block, each statement group either terminates abruptly (with a break, continue, return or thrown exception), or is marked with a comment to indicate that execution will or might continue into the next statement group. Any comment that communicates the idea of fall-through is sufficient (typically // fall through). This special comment is not required in the last statement group of the switch block. Example:
+
+在switch语句中，每个标签对应的代码执行完后，都应该通过语句结束（例如：break、continue、return 或抛出异常），否则应该通过注释说明，代码需要继续向下执行下一个标签的代码。注释说明文字只要能说明代码需要继续往下执行都可以（通常是 //fall through）。这个注释在最后一个标签之后不需要注释。例如：
 
     switch (input) {
       case 1:
@@ -415,81 +461,106 @@ Within a switch block, each statement group either terminates abruptly (with a b
       default:
         handleLargeNumber(input);
     }
+
 Notice that no comment is needed after case 1:, only at the end of the statement group.
 
-##### 4.8.4.3 The default case is present
-Each switch statement includes a default statement group, even if it contains no code.
+##### 4.8.4.3 default标签
+ 
+每个switch语句中，都需要显式声明default标签。即使没有任何代码也需要显示声明。
 
-Exception: A switch statement for an enum type may omit the default statement group, if it includes explicit cases covering all possible values of that type. This enables IDEs or other static analysis tools to issue a warning if any cases were missed.
+switch enum 时不需要添加default语句，因为IDE和其他的静态分析工具会检查出这种情况，而提醒你。 如果已经写了default语句，之后enum又发生了增补反而检查不出来
 
-#### 4.8.5 Annotations
-Annotations applying to a class, method or constructor appear immediately after the documentation block, and each annotation is listed on a line of its own (that is, one annotation per line). These line breaks do not constitute line-wrapping (Section 4.5, Line-wrapping), so the indentation level is not increased. Example:
+#### 4.8.5 注解
+
+注解紧跟在文档块后面，应用于类、方法和构造函数，一个注解独占一行。这些换行不属于自动换行(第4.5节，自动换行)，因此缩进级别不变。例如：
 
     @Override
     @Nullable
     public String getNameIfPresent() { ... }
-Exception: A single parameterless annotation may instead appear together with the first line of the signature, for example:
+
+例外：单个的注解可以和签名的第一行出现在同一行。例如：
 
     @Override public int hashCode() { ... }
-Annotations applying to a field also appear immediately after the documentation block, but in this case, multiple annotations (possibly parameterized) may be listed on the same line; for example:
+
+应用于字段的注解紧随文档块出现，应用于字段的多个注解允许与字段出现在同一行。例如：
 
     @Partial @Mock DataLoader loader;
-There are no specific rules for formatting annotations on parameters, local variables, or types.
 
-#### 4.8.6 Comments
-This section addresses implementation comments. Javadoc is addressed separately in Section 7, Javadoc.
+参数和局部变量注解没有特定规则。
+
+#### 4.8.6 注释
+
+这里说的仅指注释，Javadoc放在第7章。
 
 Any line break may be preceded by arbitrary whitespace followed by an implementation comment. Such a comment renders the line non-blank.
 
-##### 4.8.6.1 Block comment style
-Block comments are indented at the same level as the surrounding code. They may be in /* ... */ style or // ... style. For multi-line /* ... */ comments, subsequent lines must start with * aligned with the * on the previous line.
+##### 4.8.6.1 块注释风格
+
+块注释与其周围的代码在同一缩进级别。它们可以是/* ... */风格，也可以是// ...风格。对于多行的/* ... */注释，后续行必须从*开始， 并且与前一行的*对齐。以下示例注释都是OK的。
 
     /*
      * This is          // And so           /* Or you can
      * okay.            // is this.          * even do this. */
      */
-Comments are not enclosed in boxes drawn with asterisks or other characters.
 
-Tip: When writing multi-line comments, use the `/* ... */` style if you want automatic code formatters to re-wrap the lines when necessary (paragraph-style). Most formatters don't re-wrap lines in // ... style comment blocks.
+注释里，不要用多余的装饰符号
+
+    /*==============
+     *= i'm a box  =
+     *==============
+     */
+
+提示：在写多行的注释时，如果你不介意换行的位置，使用`/**/`风格，如果你介意换行的位置使用`//`风格，这个是因为有IDE会自动格式化`/**/`中的内容，或者设置你的IDE不要格式化/**/中的内容
 
 #### 4.8.7 Modifiers
-Class and member modifiers, when present, appear in the order recommended by the Java Language Specification:
 
-public protected private abstract default static final transient volatile synchronized native strictfp
-#### 4.8.8 Numeric Literals
-long-valued integer literals use an uppercase L suffix, never lowercase (to avoid confusion with the digit 1). For example, 3000000000L rather than 3000000000l.
+按照规范建议的顺序来
+
+    public protected private abstract default static final transient volatile synchronized native strictfp
+
+#### 4.8.8 数字字面量
+
+一定要使用大写的L来表示长整型，不能使用小写的l来表示长整型，小心眼花看成数字1，例如:
+
+    long a = 1L;//没问题
+    long a = 1l;//不行，看着像11
 
 
 ## 5 命名
 
-### 5.1 Rules common to all identifiers
+### 5.1 通用规则
 
-Identifiers use only ASCII letters and digits, and, in a small number of cases noted below, underscores. Thus each valid identifier name is matched by the regular expression \w+ .
+Java规范对标识符的限制是相当宽泛的。常规来说，先考虑英文字母能否命名，其次在考虑使用unicode字符，不要用拼音的声母拼接变量名。
 
-In Google Style, special prefixes or suffixes are not used. For example, these names are not Google Style: name_, mName, s_name and kName.
+不用添加特别的前缀和后缀： name_, mName, s_name and kName.
 
-### 5.2 Rules by identifier type
+我们建议建立一个公共的词汇表，优先使用共同知晓的词汇起名
 
-#### Package names
+- 开放词汇表
+- 公司词汇表
+- 业务词汇表
+- 团队词汇表
 
-包名全小写，只用英文字母。
+
+### 5.2 分项细则
+
+#### 5.2.1 Package names
+
+包名全小写，只用英文字母，不用下划线分隔单词。
 
 例如： com.helloworld
 
-#### Class names
+#### 5.2.2 Class names
 
 并遵照JAVA规范的格式：首字符大写（UpperCamelCase），不能出现首字母小写的情况（兼容性异常）。
 
-
 ##### 生产代码
 
-生产代码的类名首选使用英文字母，
+生产代码的类名严格限制只使用英文字母，并且必须是首字母大写的UpperCamelCase风格。
+
+类名通常是名词或名词短语，接口名称有时可能是形容词或形容词短语。现在还没有特定的规则或行之有效的约定来命名注解类型。
 
 提示： 尽管Java支持 unicode 做类名，但有些下游环境支持的不够好而导致错误。
-
-Class names are typically nouns or noun phrases. For example, Character or ImmutableList. Interface names may also be nouns or noun phrases (for example, List), but may sometimes be adjectives or adjective phrases instead (for example, Readable).
-
-There are no specific rules or even well-established conventions for naming annotation types.
 
 ##### 测试类
 
@@ -502,7 +573,7 @@ There are no specific rules or even well-established conventions for naming anno
 非单元测试，学习，演示用途: 以Demo结尾，例如 SpringDemo
 
 
-### 方法名（Method names）
+#### 5.2.3 方法名（Method names）
 
 常规的方法名使用java规范的基础风格，Method names are written in lowerCamelCase.
 
@@ -510,14 +581,14 @@ Method names are typically verbs or verb phrases. For example, sendMessage or st
 
 没有合适英文名字的时候可以选择汉语
 
-src/test中可以使用任何帮助理解的风格，下划线、汉语
+`src/test`中可以使用任何帮助理解的风格，下划线、汉语
 
 
-#### Constant names
+#### 5.2.4 Constant names
 
-Constant names use CONSTANT_CASE: all uppercase letters, with each word separated from the next by a single underscore. But what is a constant, exactly?
+常量名命名模式为CONSTANT_CASE，全部字母大写，用下划线分隔单词。那，到底什么算是一个常量？
 
-Constants are static final fields whose contents are deeply immutable and whose methods have no detectable side effects. This includes primitives, Strings, immutable types, and immutable collections of immutable types. If any of the instance's observable state can change, it is not a constant. Merely intending to never mutate the object is not enough. Examples:
+每个常量都是一个static final field，但不是所有static final field(包括字符串，数字，集合，对象等等)都是常量。在选择使用常量命名规则给变量命名时，你需要明确这个变量是否是常量。例如，如果这个变量的状态可以发生改变，那么这个变量几乎可以肯定不是常量。只是计划不会发生改变的变量不足以成为一个常量。下面是常量和非常量的例子：
 
     // Constants
     static final int NUMBER = 5;
@@ -538,64 +609,62 @@ Constants are static final fields whose contents are deeply immutable and whose 
     static final String[] nonEmptyArray = {"these", "can", "change"};
     These names are typically nouns or noun phrases.
 
-#### Non-constant field names
-
-Non-constant field names (static or otherwise) are written in lowerCamelCase.
-
-These names are typically nouns or noun phrases. For example, computedValues or index.
-
-#### Parameter names
-
-Parameter names are written in lowerCamelCase.
-
-One-character parameter names in public methods should be avoided.
-
-#### Local variable names
-
-Local variable names are written in lowerCamelCase.
-
-Even when final and immutable, local variables are not considered to be constants, and should not be styled as constants.
-
-#### Type variable names
-
-Each type variable is named in one of two styles:
-
-A single capital letter, optionally followed by a single numeral (such as E, T, X, T2)
-A name in the form used for classes (see Section 5.2.2, Class names), followed by the capital letter T (examples: RequestT, FooBarT).
-
-### 5.3 Camel case: defined
-
-Sometimes there is more than one reasonable way to convert an English phrase into camel case, such as when acronyms or unusual constructs like "IPv6" or "iOS" are present. To improve predictability, Google Style specifies the following (nearly) deterministic scheme.
-
-Beginning with the prose form of the name:
-
-Convert the phrase to plain ASCII and remove any apostrophes. For example, "Müller's algorithm" might become "Muellers algorithm".
-Divide this result into words, splitting on spaces and any remaining punctuation (typically hyphens).
-Recommended: if any word already has a conventional camel-case appearance in common usage, split this into its constituent parts (e.g., "AdWords" becomes "ad words"). Note that a word such as "iOS" is not really in camel case per se; it defies any convention, so this recommendation does not apply.
-Now lowercase everything (including acronyms), then uppercase only the first character of:
-... each word, to yield upper camel case, or
-... each word except the first, to yield lower camel case
-Finally, join all the words into a single identifier.
-Note that the casing of the original words is almost entirely disregarded. Examples:
-
-Prose form  Correct Incorrect
-
-    "XML HTTP request"  XmlHttpRequest  XMLHTTPRequest
-    "new customer ID" newCustomerId newCustomerID
-    "inner stopwatch" innerStopwatch  innerStopWatch
-    "supports IPv6 on iOS?" supportsIpv6OnIos supportsIPv6OnIOS
-    "YouTube importer"  YouTubeImporter
-    YoutubeImporter*  
-    *Acceptable, but not recommended.
-
-Note: Some words are ambiguously hyphenated in the English language: for example "nonempty" and "non-empty" are both correct, so the method names checkNonempty and checkNonEmpty are likewise both correct.
+#### 5.2.5 非常量的field名
 
 
 
+非常量的成员变量命名（包括静态变量和非静态变量），采用lowerCamelCase命名。
+
+一般使用名词或名词短语，例子：computedValues or index.
+
+#### 5.2.6 Parameter names
+
+参数命名采用lowerCamelCase命名。
+应该避免使用一个字符作为参数的命名方式。
+
+#### 5.2.7 Local variable names
+
+局部变量采用lowerCamelCase命名。它相对于其他类型的命名，可以采用更简短宽松的方式。
+但即使如此，也应该尽量避免采用单个字母进行命名的情况，除了在循环体内使用的临时变量。
+ 
+即使局部变量是final、不可改变的，它也不能被认为是常量，也不应该采用常量的命名方式去命名。
+
+#### 5.2.8 Type variable names
+
+类型名有两种命名方式：
+ 
+1. 单独一个大写字母，有时后面再跟一个数字。（例如，E、T、X、T2）。
+2. 像一般的class命名一样（见5.2.2节），再在最后接一个大写字母。（例如，RequestT、FooBarT）。
+
+### 5.3 Camel case规范
+
+有时一些短语被写成Camel case的时候可以有多种写法。例如一些缩写词汇，或者一些组合词：IPv6 或者 iOS 等。
+为了统一写法，Google style给出了一种几乎可以确定为一种的写法。
+ 
+1. 将字符全部转换为ASCII字符，并且去掉 ' 等符号。例如，"Müller's algorithm" 被转换为 "Muellers algorithm" 。
+2. 将上一步转换的结果拆分成一个一个的词语。从空格处和从其他剩下的标点符号处划分。
+    注意：一些已经是Camel case的词语，也应该在这个时候被拆分。（例如 AdWords 被拆分为 ad words）。但是例如iOS之类的词语，它其实不是一个Camel case的词语，而是人们惯例使用的一个词语，因此不用做拆分。
+3. 经过上面两部后，先将所有的字母转换为小写，再把每个词语的第一个字母转换为大写。
+4. 最后，将所有词语连在一起，形成一个标示符
+
+注意：词语原来的大小写规则，应该被完全忽略。以下是一些例子：
+
+| Prose form |  Correct | Incorrect |
+|------------|----------|----------|
+|  "XML HTTP request" | XmlHttpRequest | XMLHTTPRequest |
+|  "new customer ID" | newCustomerId | newCustomerID
+|  "inner stopwatch" | innerStopwatch |  innerStopWatch |
+|  "supports IPv6 on iOS?" | supportsIpv6OnIos | supportsIPv6OnIOS |
+|  "YouTube importer" | YouTubeImporter
+|    |YoutubeImporter*  
+
+*Acceptable, but not recommended.
+
+注意，有些词语在英文中，可以用 - 连接使用，也可以不使用 - 直接使用。例如 “nonempty”和 “non-empty”都是可以的。因此，方法名字为checkNonempty 或者checkNonEmpty 都是可以的。
 
 ## 6 编程实践
 
-### 6.1 @Override: always used
+### 6.1 @override 都应该使用
 
 覆盖父类的方法要写 @Override，预防拼写错误
 
@@ -624,31 +693,25 @@ Exception: 测试用途类可以不写
     } catch (NoSuchElementException expected) {
     }
     
-### 6.3 Static members: qualified using class
-When a reference to a static class member must be qualified, it is qualified with that class's name, not with a reference or expression of that class's type.
+### 6.3 静态成员的访问：应该通过类，而不是对象
+
+当一个静态成员被访问时，应该通过class名去访问，而不应该使用这个class的具体实例对象。例如：
 
     Foo aFoo = ...;
     Foo.aStaticMethod(); // good
     aFoo.aStaticMethod(); // bad
     somethingThatYieldsAFoo().aStaticMethod(); // very bad
 
-### 6.4 Finalizers: not used
+### 6.4 不使用Finalizers 方法
 
 别用 Object.finalize，也没有使用的必要。
 
-Tip: Don't do it. If you absolutely must, first read and understand Effective Java Item 7, "Avoid Finalizers," very carefully, and then don't do it.
-
-替代方案： 使用Spring 生命周期回调 
-
-    @javax.annotation.PreDestroy
-    interface org.springframework.beans.factory.DisposableBean
-
-这两种方式在Spring容器管理的bean中都能达到程序关闭前的回调
+注意：不应该使用这以方法。如果你认为你必须使用，请先仔细阅读并理解 Effective Java 第七条 “Avoid Finalizers”。然后不要使用它。
 
 
 ## 7 Javadoc
 ### 7.1 格式
-#### 7.1.1 General form
+#### 7.1.1 常规格式
 
 最基本的Javadoc风格模板：
 
@@ -668,7 +731,9 @@ Tip: Don't do it. If you absolutely must, first read and understand Effective Ja
     
     public static final String MAGIC_NUMBER; //XX功能开关
 
-#### 7.1.2 Paragraphs
+#### 7.1.2 段落
+
+空白行：是指javadoc中，上下两个段落之间只有上下对齐的 * 字符的行。每个段落的第一行在第一个字符之前，有一个<p>标签，并且之后不要有任何空格。
 
 摘要和详情段落之间要空开一行（这个和git提交备注风格一致）
 
@@ -679,17 +744,15 @@ Tip: Don't do it. If you absolutely must, first read and understand Effective Ja
      * ……
      */
 
-#### 7.1.3 Block tags
+#### 7.1.3 Javadoc标记
 
-Any of the standard "block tags" that are used appear in the order @param, @return, @throws, @deprecated, and these four types never appear with an empty description. When a block tag doesn't fit on a single line, continuation lines are indented four (or more) spaces from the position of the @.
+标准的Javadoc标记按以下顺序出现：@param, @return, @throws, @deprecated, 前面这4种标记如果出现，描述都不能为空。 当描述无法在一行中容纳，连续行需要至少再缩进4个空格。
 
 ### 7.2 摘要段
 
-Each Javadoc block begins with a brief summary fragment. This fragment is very important: it is the only part of the text that appears in certain contexts such as class and method indexes.
+每个类或成员的Javadoc以一个简短的摘要片段开始。这个片段是非常重要的，在某些情况下，它是唯一出现的文本，比如在类和方法索引中。
 
-This is a fragment—a noun phrase or verb phrase, not a complete sentence. It does not begin with A {@code Foo} is a..., or This method returns..., nor does it form a complete imperative sentence like Save the record.. However, the fragment is capitalized and punctuated as if it were a complete sentence.
-
-Tip: A common mistake is to write simple Javadoc in the form /** @return the customer ID */. This is incorrect, and should be changed to /** Returns the customer ID. */.
+这只是一个小片段，可以是一个名词短语或动词短语，但不是一个完整的句子。它不会以A {@code Foo} is a...或This method returns...开头, 它也不会是一个完整的祈使句，如Save the record...。然而，由于开头大写及被加了标点，它看起来就像是个完整的句子。
 
 ### 7.3 应用场景
 
@@ -697,24 +760,46 @@ Tip: A common mistake is to write simple Javadoc in the form /** @return the cus
 
 举例：
 
-- JPA实体字段，注释在 field上，必须使用 
+JPA实体字段，注释在 field上，必须使用，例子：
 
     @Entity
     @Table
     class Account{
-       
        /** 主键*/  
         @Id
         String id;
-        
         /** 密码 */
         @Column
         String woshimima
     }
  
-- 算法模块的类名
+算法模块的类名，用于阐述设计
 
-- 有特别调用顺序的方法之间
+    /**
+     * Interface to be implemented by beans that need to react once all their
+     * properties have been set by a BeanFactory: for example, to perform custom
+     * initialization, or merely to check that all mandatory properties have been set.
+     *
+     * <p>An alternative to implementing InitializingBean is specifying a custom
+     * init-method, for example in an XML bean definition.
+     * For a list of all bean lifecycle methods, see the BeanFactory javadocs.
+     */
+    public interface InitializingBean {
+    
+      /**
+       * Invoked by a BeanFactory after it has set all bean properties supplied
+       * (and satisfied BeanFactoryAware and ApplicationContextAware).
+       * <p>This method allows the bean instance to perform initialization only
+       * possible when all bean properties have been set and to throw an
+       * exception in the event of misconfiguration.
+       * @throws Exception in the event of misconfiguration (such
+       * as failure to set an essential property) or if initialization fails.
+       */
+      void afterPropertiesSet() throws Exception;
+    
+    }
+
+有特别调用顺序的方法之间
 
     /**
      * 连接总线的工具
@@ -737,27 +822,26 @@ Tip: A common mistake is to write simple Javadoc in the form /** @return the cus
     }
 
 
-简言之，任何需要公开使用的class、method、field 都要有文档支持。
+简言之，任何需要`公开`使用的class、method、field 都要有文档支持。
 
-At the minimum, Javadoc is present for every public class, and every public or protected member of such a class, with a few exceptions noted below.
-
-Additional Javadoc content may also be present, as explained in Section 7.3.4, Non-required Javadoc.
 
 #### 7.3.1 例外：自描述的methods
 
-方法在起名的时候就足够说明意图，这类方法可以不用写多余的注释
+方法在起名的时候就足够说明意图，并且入参如何传也能十分确定，这类方法地方再去写Javadoc就多余了
 
 单纯的getter setter可以考虑把javadoc写在在field上面，多数开发工具可以支持。
 
-Javadoc is optional for "simple, obvious" methods like getFoo, in cases where there really and truly is nothing else worthwhile to say but "Returns the foo".
+Tip：如果有一些相关信息是需要读者了解的，那么以上的例外不应作为忽视这些信息的理由。例如，对于方法名getCanonicalName， 就不应该忽视文档说明，因为读者很可能不知道词语canonical name指的是什么。
 
-Important: it is not appropriate to cite this exception to justify omitting relevant information that a typical reader might need to know. For example, for a method named getCanonicalName, don't omit its documentation (with the rationale that it would say only /** Returns the canonical name. */) if a typical reader may have no idea what the term "canonical name" means!
+#### 7.3.2 例外: overrides
 
-#### 7.3.2 Exception: overrides
+如果一个方法重写了父类中的方法，那么Javadoc就要看情况来决定是否提供。
 
-Javadoc is not always present on a method that overrides a supertype method.
+- interface 和 class 一对一实现，如果interface上面已经写了Javadoc，详细说明实现意图，子类不用写
+- callback，handler 等等回调形式的子类，需要用Javadoc写明设计意图，例如（Runnable的子类，要么在class上写Javadoc，要么在run()上写明Javadoc）
+- 对父类的Decorator,Proxy 子类 override 父类方法时要写明Javadoc 
 
-#### 7.3.4 Non-required Javadoc
+#### 7.3.4 其他（Non-required Javadoc）
 
 Other classes and members have Javadoc as needed or desired.
 
